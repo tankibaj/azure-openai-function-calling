@@ -40,11 +40,10 @@ async def validation_exception_handler(exc):
 
 
 agent = FunctionsAgent(
-    api_type=config.openai_api_type,
-    api_base=config.openai_api_base,
-    api_key=config.openai_api_key,
-    api_version=config.openai_api_version,
-    engine=config.openai_engine,
+    azure_openai_endpoint=config.azure_openai_endpoint,
+    azure_openai_key_key=config.azure_openai_key_key,
+    azure_api_version=config.azure_api_version,
+    model=config.azure_openai_deployment_name,
     functions=[
         argocd.get_available_applications,
         argocd.get_application_status
@@ -65,26 +64,17 @@ All responses to be in Human readable format.
 """
 
 
-# @app.post("/assistant/{conversation_id}")
-# async def endpoint(conversation_id: str, conversation: Conversation):
-#     system_message = Message(role='system', content=system_prompt)
-#     conversation.conversation.insert(0, system_message)
-#     conversation_dict = [message.model_dump() for message in conversation.conversation]
-#     logger.debug(f"Conversation: {conversation_dict}")
-#     response_message = agent.ask(conversation_dict)
-#     logger.debug(f"Reply: {response_message}")
-#     return {"id": conversation_id, "reply": response_message}
-
-
-def main(conversation_id: str, conversation: Conversation):
+@app.post("/assistant/{conversation_id}")
+async def endpoint(conversation_id: str, conversation: Conversation):
     system_message = Message(role='system', content=system_prompt)
     conversation.conversation.insert(0, system_message)
     conversation_dict = [message.model_dump() for message in conversation.conversation]
     logger.debug(f"Conversation: {conversation_dict}")
-    response_message = agent.ask(conversation_dict)
-    logger.debug(f"Reply: {response_message}")
-    # return {"id": conversation_id, "reply": response_message}
+    response = agent.ask(conversation_dict)
+    logger.debug(f"Reply: {response.choices[0].message.content}")
+    return {"id": conversation_id, "reply": response.choices[0].message.content}
 
 
 if __name__ == "__main__":
-    main('100', Conversation(conversation=[Message(role='user', content='How many argocd applications are available?')]))
+    response = agent.ask([{'role': 'user', 'content': 'How many argocd applications are available?'}])
+    print(response.choices[0].message.content)
