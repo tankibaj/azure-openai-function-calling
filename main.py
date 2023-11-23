@@ -7,11 +7,11 @@ from pydantic import BaseModel
 from typing import List
 import logging
 
-from core.agent import FunctionsAgent
+from core.azure_functions import AzureOpenAIFunctions
 import functions.argocd as argocd
 import config
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -39,7 +39,8 @@ async def validation_exception_handler(exc):
     return PlainTextResponse(str(exc), status_code=400)
 
 
-agent = FunctionsAgent(
+# Initialize the gpt with the functions we want to use
+gpt = AzureOpenAIFunctions(
     azure_openai_endpoint=config.azure_openai_endpoint,
     azure_openai_key_key=config.azure_openai_key_key,
     azure_api_version=config.azure_api_version,
@@ -70,11 +71,11 @@ async def endpoint(conversation_id: str, conversation: Conversation):
     conversation.conversation.insert(0, system_message)
     conversation_dict = [message.model_dump() for message in conversation.conversation]
     logger.debug(f"Conversation: {conversation_dict}")
-    response = agent.ask(conversation_dict)
+    response = gpt.ask(conversation_dict)
     logger.debug(f"Reply: {response.choices[0].message.content}")
     return {"id": conversation_id, "reply": response.choices[0].message.content}
 
 
 if __name__ == "__main__":
-    response = agent.ask([{'role': 'user', 'content': 'How many argocd applications are available?'}])
+    response = gpt.ask([{'role': 'user', 'content': 'How many argocd applications are available?'}])
     print(response.choices[0].message.content)

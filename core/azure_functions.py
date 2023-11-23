@@ -4,14 +4,14 @@ from typing import Optional, Callable, List, Dict
 
 from openai import AzureOpenAI
 
-from core.function_definition_parse import func_to_json
+from core.parser import FunctionDefinitionParser
 
 # Configure logger for better debugging and monitoring
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-class FunctionsAgent:
+class AzureOpenAIFunctions:
     def __init__(
             self,
             azure_openai_endpoint: str,
@@ -29,7 +29,8 @@ class FunctionsAgent:
             api_key=self.azure_openai_key_key,
             api_version=self.azure_api_version,
         )
-        self.functions = self._parse_functions(functions)
+        self.function_parser = FunctionDefinitionParser()  # Initialize the parser first
+        self.functions = self._parse_functions(functions)  # Then use it in _parse_functions
         self.func_mapping = self._create_func_mapping(functions)
         self.internal_thoughts = []
 
@@ -37,7 +38,7 @@ class FunctionsAgent:
         """Converts the 'python functions' list into a JSON-serializable list."""
         if functions is None:
             return None
-        return [func_to_json(func) for func in functions]
+        return [self.function_parser.convert_function_to_json_schema(func) for func in functions]
 
     def _create_func_mapping(self, functions: Optional[List[Callable]]) -> Dict[str, Callable]:
         """Creates a mapping between the function names and function definitions."""
