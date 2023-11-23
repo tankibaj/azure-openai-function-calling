@@ -79,3 +79,6 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 if __name__ == "__main__":
     response = gpt.ask([{'role': 'user', 'content': 'How many argocd applications are available?'}])
     print(response.choices[0].message.content)
+
+# Questions:
+# -- How many argocd applications are available? And what are their status?
