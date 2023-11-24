@@ -13,9 +13,9 @@ gpt = AzureOpenAIFunctions(
 )
 
 
-def generate_google_search_query(user_input):
+def generate_google_search_query(search_query):
     """
-    Uses GPT-4-turbo to convert user input into a optimized Google Search query.
+    Uses GPT-4-turbo to convert user input into an optimized Google Search query.
     """
     messages = [
         {"role": "system",
@@ -23,7 +23,7 @@ def generate_google_search_query(user_input):
                     "Google search queries. For example, USER INPUT: 'What is the current weather in Berlin?' "
                     "OPTIMIZED Google Search Query: 'current weather Berlin'"},
         {"role": "user",
-         "content": f"Convert the following user query into a optimized Google Search query: {user_input}"}
+         "content": f"Convert the following user query into a optimized Google Search query: {search_query}"}
     ]
     try:
         response = gpt.ask(messages)
@@ -80,9 +80,9 @@ def scrape_website(url):
 
 
 if __name__ == "__main__":
-    # user_input = "What is the current weather in Berlin?"
-    # optimized_query = generate_google_search_query(user_input)
-    # print(f"User Input: {user_input}")
+    # search_query = "What is the current weather in Berlin?"
+    # optimized_query = generate_google_search_query(search_query)
+    # print(f"User Input: {search_query}")
     # print(f"Optimized Google Search Query: {optimized_query}")
     # urls = google_search(optimized_query)
     urls = google_search("Weather Today Berlin")
