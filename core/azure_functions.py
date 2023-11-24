@@ -137,9 +137,9 @@ class AzureOpenAIFunctions:
         }
         return final_thought
 
-    def ask(self, message: List[Dict]):
+    def ask(self, messages: List[Dict]):
         """Asks a question to the OpenAI API. The main method to interact with the OpenAI GPT-4 model."""
         self.internal_thoughts = []
-        chat_history = message
+        chat_history = messages
         response = self._generate_response(chat_history)
         return response
