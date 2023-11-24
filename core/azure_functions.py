@@ -8,7 +8,7 @@ from core.parser import FunctionDefinitionParser
 
 # Configure logger for better debugging and monitoring
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 class AzureOpenAIFunctions:

@@ -8,10 +8,12 @@ from typing import List
 import logging
 
 from core.azure_functions import AzureOpenAIFunctions
-import functions.argocd as argocd
 import config
+import functions.argocd as argocd
+import functions.websearch as websearch
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 
@@ -47,19 +49,19 @@ gpt = AzureOpenAIFunctions(
     model=config.azure_openai_deployment_name,
     functions=[
         argocd.get_available_applications,
-        argocd.get_application_status
+        argocd.get_application_status,
+        websearch.web_search,
     ]
 )
 
-system_prompt = """You are a DevOps assistant developed by Naim. 
+system_prompt = """You are an AI assistant with access to the web-search and argocd functions.
 
-You have exceptional capabilities and I can rely on you to execute various functions to manage our software deployments efficiently. 
+The web-search function enables real-time web search and information retrieval. Use this tool to fetch current, 
+relevant data from the internet in response to user  queries, especially when the information is not in your training 
+data or when up-to-date information is needed. Always provide the source of the information.
 
-By leveraging the power of the OpenAI GPT-4 API's function calling feature, you can seamlessly interact with our git repositories (e.g., gitops repository) and Kubernetes cluster. 
-
-Your expertise is invaluable in handling our applications' lifecycle effectively. 
-
-Please provide short answers to user queries unless asked to answer in detail.
+The argocd function enables real-time interaction with the argocd instance. Use this tool to fetch information about 
+the applications deployed in the cluster.
 
 All responses to be in Human readable format.
 """
@@ -77,8 +79,12 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'How many argocd applications are available?'}])
+    response = gpt.ask([{'role': 'user', 'content': 'Why was Sam Altman fired from OpenAI?'}])
     print(response.choices[0].message.content)
 
 # Questions:
+# -- How many argocd applications are available?
 # -- How many argocd applications are available? And what are their status?
+# -- Who won ICC world cup 2023?
+# -- What is the weather in Berlin today?
+# -- What is the weather in Berlin today? What about tomorrow?
