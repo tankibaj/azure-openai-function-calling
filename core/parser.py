@@ -6,7 +6,6 @@ from typing import Callable, Dict, List, Optional, Any
 
 # Configure logger
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 
 class FunctionDefinitionParser:

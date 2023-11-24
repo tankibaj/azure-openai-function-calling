@@ -8,7 +8,6 @@ from core.parser import FunctionDefinitionParser
 
 # Configure logger for better debugging and monitoring
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 
 class AzureOpenAIFunctions:
@@ -49,6 +48,7 @@ class AzureOpenAIFunctions:
     def _create_chat_completion(self, messages: List[Dict], use_functions: bool = True):
         """Calls the OpenAI API to create a chat completion, using the functions if specified."""
         try:
+            logger.debug(f"Creating chat completion with messages: {messages} and use_functions: {use_functions}")
             if use_functions and self.functions:
                 return self.client.chat.completions.create(
                     model=self.model,
@@ -63,12 +63,13 @@ class AzureOpenAIFunctions:
                     messages=messages
                 )
         except Exception as e:
-            logger.error(f"Error in creating chat completion: {e}")
+            logger.error(f"Error in creating chat completion with messages: {messages}, error: {e}", exc_info=True)
             raise
 
     def _generate_response(self, chat_history: List[Dict]):
         """Generates a response from the OpenAI API."""
         try:
+            logger.debug(f"Generating response with chat_history: {chat_history}")
             while True:
                 response = self._create_chat_completion(chat_history + self.internal_thoughts)
                 finish_reason = response.choices[0].finish_reason
@@ -85,12 +86,13 @@ class AzureOpenAIFunctions:
                 else:
                     raise ValueError(f"Unexpected finish reason: {finish_reason}")
         except Exception as e:
-            logger.error(f"Error in generating response: {e}")
+            logger.error(f"Error in generating response with chat_history: {chat_history}, error: {e}", exc_info=True)
             raise
 
     def _handle_function_call(self, response):
         """Handles when a function is called within the chat."""
         try:
+            logger.debug(f"Handling function call with response: {response}")
             choice = response.choices[0]
             function_call = choice.message.function_call
             func_name = function_call.name
@@ -104,19 +106,22 @@ class AzureOpenAIFunctions:
             res_msg = {'role': 'function', 'name': func_name, 'content': str(result)}
             self.internal_thoughts.append(res_msg)
         except Exception as e:
-            logger.error(f"Error in handling function call: {e}")
+            logger.error(f"Error in handling function call with response: {response}, error: {e}", exc_info=True)
             raise
 
     def _call_function(self, func_name: str, args: Dict):
         """Calls the actual function when invoked in _handle_function_call."""
         try:
+            logger.debug(f"Calling function '{func_name}' with arguments: {args}")
             func = self.func_mapping.get(func_name)
             if func:
-                return func(**args)
+                result = func(**args)
+                logger.debug(f"Function '{func_name}' returned: {result}")
+                return result
             else:
                 raise ValueError(f"Function {func_name} not implemented")
         except Exception as e:
-            logger.error(f"Error in calling function {func_name}: {e}")
+            logger.error(f"Error in calling function {func_name} with arguments: {args}, error: {e}", exc_info=True)
             raise
 
     def _final_thought_answer(self) -> Dict[str, str]:
@@ -133,7 +138,8 @@ class AzureOpenAIFunctions:
             'role': 'assistant',
             'content': f"{thoughts} Based on the above, I will now answer the "
                        "question, this message will only be seen by me so answer with "
-                       "the assumption that the user has not seen this message."
+                       "the assumption that the user has not seen this message. If possible I will provide the source "
+                       "of the information url to user."
         }
         return final_thought
 

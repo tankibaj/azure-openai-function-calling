@@ -7,7 +7,6 @@ from core.azure_functions import AzureOpenAIFunctions
 import config
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -96,9 +95,10 @@ class WebSearchManager:
         The entrypoint for performing a web search and scraping the content.
         """
         try:
-            optimized_query = self.generate_google_search_query(query)
+            # optimized_query = self.generate_google_search_query(query)
             # print(f"Optimized Google Search Query: {optimized_query}")
-            urls = self.google_search(optimized_query)
+            # urls = self.google_search(optimized_query)
+            urls = self.google_search(query)
             scraped_data = [self.scrape_website(url) for url in urls]
             return json.dumps(scraped_data, indent=2)
         except Exception as e:

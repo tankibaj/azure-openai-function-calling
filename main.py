@@ -12,9 +12,9 @@ import config
 import functions.argocd as argocd
 import functions.websearch as websearch
 
-
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+logger.propagate = True
 
 
 class Message(BaseModel):
@@ -58,7 +58,7 @@ system_prompt = """You are an AI assistant with access to the web-search and arg
 
 The web-search function enables real-time web search and information retrieval. Use this tool to fetch current, 
 relevant data from the internet in response to user  queries, especially when the information is not in your training 
-data or when up-to-date information is needed. Always provide the source of the information.
+data or when up-to-date information is needed. Always provide the source of the information url.
 
 The argocd function enables real-time interaction with the argocd instance. Use this tool to fetch information about 
 the applications deployed in the cluster.
@@ -79,10 +79,11 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'Why was Sam Altman fired from OpenAI?'}])
+    response = gpt.ask([{'role': 'user', 'content': 'What is the weather in Berlin today? What about tomorrow?'}])
     print(response.choices[0].message.content)
 
 # Questions:
+# -- Is Sam Altman fired from OpenAI?
 # -- How many argocd applications are available?
 # -- How many argocd applications are available? And what are their status?
 # -- Who won ICC world cup 2023?
