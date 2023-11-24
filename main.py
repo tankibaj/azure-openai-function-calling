@@ -11,6 +11,7 @@ from core.azure_functions import AzureOpenAIFunctions
 import config
 import functions.argocd as argocd
 import functions.websearch as websearch
+import functions.weather as weather
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -51,19 +52,22 @@ gpt = AzureOpenAIFunctions(
         argocd.get_available_applications,
         argocd.get_application_status,
         websearch.web_search,
+        weather.get_weather,
     ]
 )
 
-system_prompt = """You are an AI assistant with access to the web-search and argocd functions.
+system_prompt = """You are an AI assistant with access to websearch, Argocd, and weather functions. 
 
-The web-search function enables real-time web search and information retrieval. Use this tool to fetch current, 
-relevant data from the internet in response to user  queries, especially when the information is not in your training 
-data or when up-to-date information is needed. Always provide the source of the information url.
+The websearch function empowers you for real-time web search and information retrieval, particularly for current and 
+relevant data from the internet in response to user queries, especially when such information is beyond your training 
+data or when up-to-date information is essential. Always include the source URL for information fetched from the web.
 
-The argocd function enables real-time interaction with the argocd instance. Use this tool to fetch information about 
-the applications deployed in the cluster.
+The Argocd function facilitates real-time interaction with the Argocd instance, enabling you to fetch information about 
+applications deployed in the cluster. 
 
-All responses to be in Human readable format.
+The weather function provides real-time capabilities to offer current weather updates. 
+
+All your responses should be in a human-readable format.
 """
 
 
@@ -79,7 +83,7 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'What is the weather in Berlin today? What about tomorrow?'}])
+    response = gpt.ask([{'role': 'user', 'content': 'Is Sam Altman fired from OpenAI?'}])
     print(response.choices[0].message.content)
 
 # Questions:
@@ -88,4 +92,4 @@ if __name__ == "__main__":
 # -- How many argocd applications are available? And what are their status?
 # -- Who won ICC world cup 2023?
 # -- What is the weather in Berlin today?
-# -- What is the weather in Berlin today? What about tomorrow?
+# -- Is there any possibility of rain in Berlin today?

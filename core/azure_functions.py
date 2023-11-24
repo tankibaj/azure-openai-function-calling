@@ -126,7 +126,7 @@ class AzureOpenAIFunctions:
 
     def _final_thought_answer(self) -> Dict[str, str]:
         """Creates the final thought answer."""
-        thoughts = "To answer the question I will use these step by step instructions.\n\n"
+        thoughts = "To answer user queries I will use following information as context. ---CONTEXT START---\n\n"
         for thought in self.internal_thoughts:
             if 'function_call' in thought.keys():
                 thoughts += (f"I will use the {thought['function_call']['name']} "
@@ -136,8 +136,8 @@ class AzureOpenAIFunctions:
                 thoughts += thought["content"] + "\n\n"
         final_thought = {
             'role': 'assistant',
-            'content': f"{thoughts} Based on the above, I will now answer the "
-                       "question, this message will only be seen by me so answer with "
+            'content': f"{thoughts} ---CONTEXT END---. Based on the above context, I will now answer the "
+                       "queries, this message will only be seen by me so answer with "
                        "the assumption that the user has not seen this message. If possible I will provide the source "
                        "of the information url to user."
         }
