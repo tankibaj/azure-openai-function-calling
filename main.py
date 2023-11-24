@@ -52,11 +52,12 @@ gpt = AzureOpenAIFunctions(
         argocd.get_available_applications,
         argocd.get_application_status,
         websearch.web_search,
+        websearch.scrape_webpage,
         weather.get_weather,
     ]
 )
 
-system_prompt = """You are an AI assistant with access to websearch, Argocd, and weather functions. 
+system_prompt = """You are an AI assistant with access to websearch, Argocd, and weather functions.
 
 The websearch function empowers you for real-time web search and information retrieval, particularly for current and 
 relevant data from the internet in response to user queries, especially when such information is beyond your training 
@@ -83,7 +84,7 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'Is Sam Altman fired from OpenAI?'}])
+    response = gpt.ask([{'role': 'user', 'content': 'Summarize the article in 2 sentences https://www.bbc.com/news/technology-67514068'}])
     print(response.choices[0].message.content)
 
 # Questions:
@@ -93,3 +94,4 @@ if __name__ == "__main__":
 # -- Who won ICC world cup 2023?
 # -- What is the weather in Berlin today?
 # -- Is there any possibility of rain in Berlin today?
+# -- Summarize the article in 5 sentences https://www.bbc.com/news/technology-67514068

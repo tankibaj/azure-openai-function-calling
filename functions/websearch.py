@@ -19,3 +19,23 @@ def web_search(query):
     except Exception as e:
         return json.dumps({"error": str(e)})
 
+
+def scrape_webpage(url):
+    """Scrape a webpage for its text content.
+
+    This function enables web scraping for GPT models. It fetches the text content of a webpage and returns it to the
+    model. Use this function if user queries include a URL.
+
+    :param url: The URL of the webpage to scrape.
+    :return: A JSON-formatted string containing the scraped text. In case of an error, it returns a JSON-formatted string with an error message.
+    """
+    try:
+        web = WebSearchManager()
+        result = web.scrape_website(url)
+        return result
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+
+# if __name__ == "__main__":
+#     print(scrape_webpage("https://www.bbc.com/news/technology-67514068"))
