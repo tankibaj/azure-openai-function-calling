@@ -89,7 +89,8 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'Provide video tutorial for Excel pivot table'}])
+    prompt = "Summarize the article in 3 sentences https://www.bbc.com/news/world-us-canada-67482231"
+    response = gpt.ask([{'role': 'user', 'content': f'{prompt}'}])
     print(response.choices[0].message.content)
 
 
@@ -99,17 +100,35 @@ if __name__ == "__main__":
 # -- Location search
 # -- Image search
 # -- Summarize article from URL
-# -- Weather
+# -- Weather information
 # -- Integration with ArgoCD application through rest API.
 
-# Questions:
+# === Questions ===
+# ---- General search to recent events ----
 # -- Is Sam Altman fired from OpenAI?
+# -- What happened to HSBC bank in UK?
+# -- What happened to WeWork?
+
+# ---- About person ----
+# -- Who is Frank Gotthard?
+
+# ---- Video search ----
 # -- Provide video tutorial for Excel pivot table.
+
+# ---- Location search ----
 # -- Suggestions for the top 3 Italian restaurant in Munich.
+
+# ---- Image search ----
 # -- Provide puppies images.
+
+# ---- Weather ----
 # -- What is the weather in Berlin today?
 # -- Is there any possibility of rain in Berlin today?
-# -- Summarize the article in 5 sentences https://www.bbc.com/news/technology-67514068
+
+# ---- Summarize from URL ----
+# -- Summarize the article in 3 sentences https://www.bbc.com/news/world-us-canada-67482231
+
+# ---- External application ----
 # -- How many argocd applications are available?
 # -- How many argocd applications are available? And what are their status?
 
