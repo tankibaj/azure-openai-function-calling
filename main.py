@@ -11,7 +11,9 @@ from core.azure_functions import AzureOpenAIFunctions
 import config
 import functions.argocd as argocd
 import functions.websearch as websearch
+import functions.web_browsing as webrowsing
 import functions.weather as weather
+
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -51,9 +53,14 @@ gpt = AzureOpenAIFunctions(
     functions=[
         argocd.get_available_applications,
         argocd.get_application_status,
-        websearch.web_search,
+        # websearch.web_search,
         websearch.scrape_webpage,
         weather.get_weather,
+        webrowsing.text_search,
+        webrowsing.news_search,
+        webrowsing.images_search,
+        webrowsing.videos_search,
+        webrowsing.maps_search
     ]
 )
 
@@ -84,7 +91,7 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'Summarize the article in 2 sentences https://www.bbc.com/news/technology-67514068'}])
+    response = gpt.ask([{'role': 'user', 'content': 'Is Sam Altman fired from OpenAI?'}])
     print(response.choices[0].message.content)
 
 # Questions:
@@ -95,3 +102,5 @@ if __name__ == "__main__":
 # -- What is the weather in Berlin today?
 # -- Is there any possibility of rain in Berlin today?
 # -- Summarize the article in 5 sentences https://www.bbc.com/news/technology-67514068
+# -- Provide video tutorial for Excel pivot table.
+# -- Suggestions for the top 3 Italian restaurant in Berlin.
