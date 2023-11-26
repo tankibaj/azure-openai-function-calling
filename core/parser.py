@@ -32,12 +32,12 @@ class FunctionDefinitionParser:
             return "string"
 
     @staticmethod
-    def extract_param_descriptions_from_docstring(doc_str: str) -> Dict[str, str]:
+    def extract_param_descriptions_from_docstring(doc_str: str) -> Dict[str, Dict[str, Any]]:
         """
         Extracts parameter descriptions from a function's docstring.
 
         :param doc_str: The docstring of the function.
-        :return: A dictionary mapping parameter names to their descriptions.
+        :return: A dictionary mapping parameter names to their descriptions and optional status.
         """
         params_str = [line for line in doc_str.split("\n") if line.strip()]
         params = {}
@@ -47,8 +47,9 @@ class FunctionDefinitionParser:
                 if param_match:
                     param_name = param_match[0]
                     desc_match = line.replace(f":param {param_name}:", "").strip()
+                    is_optional = "(optional)" in desc_match
                     if desc_match:
-                        params[param_name] = desc_match
+                        params[param_name] = {"description": desc_match, "optional": is_optional}
         return params
 
     def convert_function_to_json_schema(self, func: Callable) -> Dict[str, Any]:
@@ -73,15 +74,18 @@ class FunctionDefinitionParser:
 
             params = {
                 param_name: {
-                    "description": param_details.get(param_name, ""),
+                    "description": param_details.get(param_name, {}).get("description", ""),
                     "type": self.get_json_type_from_python_type(argspec.annotations.get(param_name, type(None)))
                 }
                 for param_name in argspec.args if param_name not in fixed_args
             }
 
-            required_params = [p for p in argspec.args if p not in fixed_args]
-            if argspec.defaults:
-                required_params = [p for p in required_params if p not in argspec.defaults]
+            # Parameters marked as optional in the docstring are not included in the required list
+            required_params = [p for p in argspec.args if p not in fixed_args and not param_details.get(p, {}).get("optional", False)]
+
+            # Remove the 'optional' key from parameter descriptions
+            for param in params.values():
+                param.pop('optional', None)
 
             return {
                 "name": func.__name__,
