@@ -10,13 +10,12 @@ import logging
 from core.azure_functions import AzureOpenAIFunctions
 import config
 import functions.argocd as argocd
-import functions.websearch as websearch
-import functions.web_browsing as webrowsing
+import functions.web_browsing as browser
 import functions.weather as weather
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger.propagate = True
 
 
@@ -53,14 +52,13 @@ gpt = AzureOpenAIFunctions(
     functions=[
         argocd.get_available_applications,
         argocd.get_application_status,
-        # websearch.web_search,
-        websearch.scrape_webpage,
         weather.get_weather,
-        webrowsing.text_search,
-        webrowsing.news_search,
-        webrowsing.images_search,
-        webrowsing.videos_search,
-        webrowsing.maps_search
+        browser.text_search,
+        browser.news_search,
+        browser.images_search,
+        browser.videos_search,
+        browser.maps_search,
+        browser.webpage_scraper
     ]
 )
 
@@ -91,16 +89,27 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    response = gpt.ask([{'role': 'user', 'content': 'Is Sam Altman fired from OpenAI?'}])
+    response = gpt.ask([{'role': 'user', 'content': 'Provide video tutorial for Excel pivot table'}])
     print(response.choices[0].message.content)
+
+
+# Features:
+# -- Web search
+# -- Video search
+# -- Location search
+# -- Image search
+# -- Summarize article from URL
+# -- Weather
+# -- Integration with ArgoCD application through rest API.
 
 # Questions:
 # -- Is Sam Altman fired from OpenAI?
-# -- How many argocd applications are available?
-# -- How many argocd applications are available? And what are their status?
-# -- Who won ICC world cup 2023?
+# -- Provide video tutorial for Excel pivot table.
+# -- Suggestions for the top 3 Italian restaurant in Munich.
+# -- Provide puppies images.
 # -- What is the weather in Berlin today?
 # -- Is there any possibility of rain in Berlin today?
 # -- Summarize the article in 5 sentences https://www.bbc.com/news/technology-67514068
-# -- Provide video tutorial for Excel pivot table.
-# -- Suggestions for the top 3 Italian restaurant in Berlin.
+# -- How many argocd applications are available?
+# -- How many argocd applications are available? And what are their status?
+

@@ -4,7 +4,7 @@ import config
 
 
 def get_weather(city, api_key=config.openweathermap_key):
-    """Fetch the current weather for a given city using OpenWeatherMap API.
+    """Fetch the current weather for a given city using OpenWeatherMap API. The output should be in Markdown format.
 
     This function enables real-time weather information retrieval for GPT models. It fetches current weather data
     from the internet in response to user queries, enhancing GPT's knowledge base and reducing reliance on

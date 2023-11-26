@@ -1,7 +1,11 @@
+import json
+
 from functions.duck_duck_go_search import DuckDuckGoSearchManager
+from functions.google_search import GoogleSearchManager
 from functions.web_scraper import WebContentScraper
 
-web = DuckDuckGoSearchManager()
+ddg = DuckDuckGoSearchManager()
+gs = GoogleSearchManager()
 scraper = WebContentScraper()
 
 
@@ -20,7 +24,7 @@ def text_search(query: str, num_results: int = 3) -> str:
     :return: A JSON-formatted string. Each element in the JSON represents the result of scraping a single URL,
     containing either the scraped content or an error message.
     """
-    urls = web.text_search(query, int(num_results))
+    urls = ddg.text_search(query, int(num_results))
     scraped_data = scraper.scrape_multiple_websites(urls)
     return scraped_data
 
@@ -40,13 +44,14 @@ def news_search(query, num_results=5):
     :return: A JSON-formatted string. Each element in the JSON represents the result of scraping a single URL,
     containing either the scraped content or an error message.
     """
-    urls = web.news_search(query, int(num_results))
+    # urls = ddg.news_search(query, int(num_results)) # DuckDuckGo search
+    urls = gs.google_search(query, int(num_results))  # Google search
     scraped_data = scraper.scrape_multiple_websites(urls)
     return scraped_data
 
 
 def images_search(query, num_results=3):
-    """Performs the image search for a specific query. For example, "puppies". If possible, output to the user as markdown format.
+    """Performs the image search for a specific query. For example, "puppies". If possible, the output should be in Markdown format.
 
     This function enables real-time image search and information retrieval for GPT models. It fetches relevant data from the internet in response to user queries, enhancing GPT's knowledge base.
 
@@ -56,12 +61,12 @@ def images_search(query, num_results=3):
     :return: A list of dictionaries, where each dictionary contains 'image' (URL of the actual image) and 'thumbnail' (URL of the image's thumbnail).
     """
 
-    image_info = web.images_search(query, int(num_results))
+    image_info = ddg.images_search(query, int(num_results))
     return image_info
 
 
 def videos_search(query, num_results=3):
-    """Performs the video for a specific query. For example, "video tutorial for Excel pivot table". If possible, output to the user as markdown format.
+    """Performs the video for a specific query. For example, "video tutorial for Excel pivot table". If possible, the output should be in Markdown format.
 
     This function enables real-time video search and information retrieval for GPT models. It fetches relevant data from the internet in response to user queries, enhancing GPT's knowledge base.
 
@@ -71,12 +76,12 @@ def videos_search(query, num_results=3):
     :return: A list of dictionaries, where each dictionary represents a search result. Each dictionary contains two keys: 'title', title of the content, and 'content', URL to the resource.
     """
 
-    video_info = web.videos_search(query, int(num_results))
+    video_info = ddg.videos_search(query, int(num_results))
     return video_info
 
 
 def maps_search(query, place, num_results=3):
-    """Performs the location for a specific query. For example, "Italian restaurant in Berlin". If possible, output to the user as a table format.
+    """Performs the location for a specific query. For example, "Italian restaurant in Berlin". If possible, the output should be in Markdown format.
 
     This function enables real-time location search and information retrieval for GPT models. It fetches relevant data from the internet in response to user queries, enhancing GPT's knowledge base.
 
@@ -86,16 +91,33 @@ def maps_search(query, place, num_results=3):
 
     :return: A list of dictionaries, each representing a restaurant. Each dictionary includes the location's title, address, phone number, URL, and a nested dictionary of operating hours with keys indicating days of the week and additional status information like 'closes_soon', 'is_open', and 'state_switch_time'.
     """
-    map_info = web.maps_search(query, place, int(num_results))
+    map_info = ddg.maps_search(query, place, int(num_results))
     return map_info
+
+
+def webpage_scraper(url):
+    """Scrape a webpage for its text content.
+
+    This function enables web scraping for GPT models. It fetches the text content of a webpage and returns it to the
+    model. Use this function if user queries include a URL.
+
+    :param url: The URL of the webpage to scrape.
+    :return: A JSON-formatted string containing the scraped text. In case of an error, it returns a JSON-formatted string with an error message.
+    """
+    try:
+        result = scraper.scrape_website(url)
+        return result
+    except Exception as e:
+        return json.dumps({"error": str(e)})
 
 
 # Debug code
 # print(text_search("Is Sam Altman fired from OpenAI?", 5))
-print(news_search("Is Sam Altman fired from OpenAI?", 5))
+# print(news_search("Is Sam Altman fired from OpenAI?", 5))
 # print(images_search("puppies", 5))
 # print(videos_search("video tutorial for Excel pivot table", 5))
 # print(maps_search("Italian  restaurant", "berlin", 5))
+# print(webpage_scraper("https://www.bbc.com/news/technology-67514068"))
 
 # from core.parser import FunctionDefinitionParser
 # parser = FunctionDefinitionParser()
