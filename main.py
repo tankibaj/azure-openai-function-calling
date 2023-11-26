@@ -109,7 +109,7 @@ if __name__ == "__main__":
 # -- What happened to HSBC bank in UK?
 # -- What happened to WeWork?
 
-# ---- About person ----
+# ---- About a person ----
 # -- Who is Frank Gotthard?
 
 # ---- Video search ----
