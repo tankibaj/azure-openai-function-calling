@@ -89,9 +89,14 @@ async def endpoint(conversation_id: str, conversation: Conversation):
 
 
 if __name__ == "__main__":
-    prompt = "Summarize the article in 3 sentences https://www.bbc.com/news/world-us-canada-67482231"
+    prompt = "Is Sam Altman fired from OpenAI?"
     response = gpt.ask([{'role': 'user', 'content': f'{prompt}'}])
-    print(response.choices[0].message.content)
+    # ANSI escape sequences for colors
+    RED = '\033[91m'
+    GREEN = '\033[92m'
+    ENDC = '\033[0m'  # Resets the color to default
+    print(f"{RED}\nQuery: {prompt} {ENDC}\n")
+    print(f"{GREEN}Reply: {response.choices[0].message.content}{ENDC}")
 
 
 # Features:
@@ -114,12 +119,17 @@ if __name__ == "__main__":
 
 # ---- Video search ----
 # -- Provide video tutorial for Excel pivot table.
+# -- Provide video tutorial for Python pandas.
+# -- Show me a video about how to make a cake.
 
 # ---- Location search ----
 # -- Suggestions for the top 3 Italian restaurant in Munich.
 
 # ---- Image search ----
 # -- Provide puppies images.
+# -- Provide 10 images of cats.
+# --Show me pictures of the Eiffel Tower.
+# -- Show me pictures of the Eiffel Tower at night.
 
 # ---- Weather ----
 # -- What is the weather in Berlin today?
