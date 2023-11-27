@@ -1,0 +1,12 @@
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "What happened to HSBC bank in the UK?"
+    }
+  ]
+}

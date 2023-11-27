@@ -63,7 +63,7 @@ class WebContentScraper:
             - 'content': The scraped and parsed content from the website, if successful.
             - 'error': An error message, if the scraping process failed at any stage.
         """
-        logging.info(f"Scraping URL: {url}")
+        logging.debug(f"Scraping URL: {url}")
         page_content = self._fetch_page_content(url)
         if page_content:
             parsed_content = self._parse_web_content(page_content)
