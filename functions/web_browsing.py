@@ -29,7 +29,7 @@ def text_search(query: str, num_results: int = 3) -> str:
     return scraped_data
 
 
-def news_search(query, num_results=5):
+def news_search(query, num_results=3):
     """Conducts a search for news articles and retrieves information from the internet in response to user queries.
 
     This function is specifically designed for queries that require up-to-date information from news sources. It
