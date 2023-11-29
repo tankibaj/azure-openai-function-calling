@@ -20,7 +20,7 @@ class GoogleSearchManager:
             model=config.azure_openai_deployment_name,
         )
 
-    # def generate_google_search_query(self, search_query):
+    # def optimize_google_search_query(self, search_query):
     #     """
     #     Generates an optimized Google Search query using GPT-4-turbo.
     #     """

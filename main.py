@@ -13,21 +13,23 @@ import functions.argocd as argocd
 import functions.web_browsing as browser
 import functions.weather as weather
 
-
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 logger.propagate = True
 
 
+# -- The message schema for the assistant
 class Message(BaseModel):
     role: str
     content: str
 
 
+# -- The conversation schema for the assistant
 class Conversation(BaseModel):
     conversation: List[Message]
 
 
+# -- Initialize the FastAPI app
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -38,13 +40,28 @@ app.add_middleware(
 )
 
 
+# -- Exception handler for the FastAPI app
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(exc):
     return PlainTextResponse(str(exc), status_code=400)
 
 
-# Initialize the gpt with the functions we want to use
-gpt = AzureOpenAIFunctions(
+system_prompt = """You are an AI assistant with access to websearch, Argocd, and weather functions.
+
+The websearch function empowers you for real-time web search and information retrieval, particularly for current and 
+relevant data from the internet in response to user queries, especially when such information is beyond your training 
+data or when up-to-date information is essential. Always include the source URL for information fetched from the web.
+
+The Argocd function facilitates real-time interaction with the Argocd instance, enabling you to fetch information about 
+applications deployed in the cluster. 
+
+The weather function provides real-time capabilities to offer current weather updates. 
+
+All your responses should be in a human-readable format.
+"""
+
+# Initialize the assistant with the functions
+assistant = AzureOpenAIFunctions(
     azure_openai_endpoint=config.azure_openai_endpoint,
     azure_openai_key_key=config.azure_openai_key_key,
     azure_api_version=config.azure_api_version,
@@ -62,42 +79,29 @@ gpt = AzureOpenAIFunctions(
     ]
 )
 
-system_prompt = """You are an AI assistant with access to websearch, Argocd, and weather functions.
 
-The websearch function empowers you for real-time web search and information retrieval, particularly for current and 
-relevant data from the internet in response to user queries, especially when such information is beyond your training 
-data or when up-to-date information is essential. Always include the source URL for information fetched from the web.
-
-The Argocd function facilitates real-time interaction with the Argocd instance, enabling you to fetch information about 
-applications deployed in the cluster. 
-
-The weather function provides real-time capabilities to offer current weather updates. 
-
-All your responses should be in a human-readable format.
-"""
-
-
+# -- FastAPI endpoints
 @app.post("/assistant/{conversation_id}")
 async def endpoint(conversation_id: str, conversation: Conversation):
     system_message = Message(role='system', content=system_prompt)
     conversation.conversation.insert(0, system_message)
     conversation_dict = [message.model_dump() for message in conversation.conversation]
     logger.debug(f"Conversation: {conversation_dict}")
-    response = gpt.ask(conversation_dict)
+    response = assistant.ask(conversation_dict)
     logger.debug(f"Reply: {response.choices[0].message.content}")
     return {"id": conversation_id, "reply": response.choices[0].message.content}
 
 
+# -- Test the assistant
 if __name__ == "__main__":
     prompt = "Is Sam Altman fired from OpenAI?"
-    response = gpt.ask([{'role': 'user', 'content': f'{prompt}'}])
+    response = assistant.ask([{'role': 'user', 'content': f'{prompt}'}])
     # ANSI escape sequences for colors
     RED = '\033[91m'
     GREEN = '\033[92m'
     ENDC = '\033[0m'  # Resets the color to default
     print(f"{RED}\nQuery: {prompt} {ENDC}\n")
     print(f"{GREEN}Reply: {response.choices[0].message.content}{ENDC}")
-
 
 # Features:
 # -- Web search
@@ -128,7 +132,7 @@ if __name__ == "__main__":
 # ---- Image search ----
 # -- Provide puppies images.
 # -- Provide 10 images of cats.
-# --Show me pictures of the Eiffel Tower.
+# -- Show me pictures of the Eiffel Tower.
 # -- Show me pictures of the Eiffel Tower at night.
 
 # ---- Weather ----
@@ -141,4 +145,3 @@ if __name__ == "__main__":
 # ---- External application ----
 # -- How many argocd applications are available?
 # -- How many argocd applications are available? And what are their status?
-

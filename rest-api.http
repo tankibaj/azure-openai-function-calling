@@ -1,3 +1,4 @@
+### Asking the assistant about the most recent news
 POST http://127.0.0.1:8000/assistant/{{conversation_id}}
 Accept: application/json
 Content-Type: application/json
@@ -6,7 +7,103 @@ Content-Type: application/json
   "conversation": [
     {
       "role": "user",
-      "content": "What happened to HSBC bank in the UK?"
+      "content": "Is Sam Altman fired from OpenAI?"
+    }
+  ]
+}
+
+
+
+### Asking the assistant about general information
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Who is Frank Gotthard?"
+    }
+  ]
+}
+
+
+
+### Asking the assistant to conduct a video search
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Show me a video about how to make a cake."
+    }
+  ]
+}
+
+
+
+### Asking the assistant to conduct a location search
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Suggestions for the top 3 Italian restaurant in Munich"
+    }
+  ]
+}
+
+
+
+### Asking the assistant to conduct an image search
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Show me pictures of the Eiffel Tower"
+    }
+  ]
+}
+
+
+
+### Asking the assistant about the weather
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Is there any possibility of rain in Berlin today?"
+    }
+  ]
+}
+
+
+
+### Asking the assistant to summarize from URL
+POST http://127.0.0.1:8000/assistant/{{conversation_id}}
+Accept: application/json
+Content-Type: application/json
+
+{
+  "conversation": [
+    {
+      "role": "user",
+      "content": "Summarize the article in 2 sentences https://www.bbc.com/news/world-us-canada-67482231"
     }
   ]
 }
