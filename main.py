@@ -60,7 +60,7 @@ The weather function provides real-time capabilities to offer current weather up
 All your responses should be in a human-readable format.
 """
 
-# Initialize the assistant with the functions
+# Initialize the assistant (GPT Model) with the functions
 assistant = AzureOpenAIFunctions(
     azure_openai_endpoint=config.azure_openai_endpoint,
     azure_openai_key_key=config.azure_openai_key_key,
@@ -92,7 +92,7 @@ async def endpoint(conversation_id: str, conversation: Conversation):
     return {"id": conversation_id, "reply": response.choices[0].message.content}
 
 
-# -- Test the assistant
+# -- Test the assistant. This is not part of the FastAPI app, only for demonstration purposes.
 if __name__ == "__main__":
     prompt = "Is Sam Altman fired from OpenAI?"
     response = assistant.ask([{'role': 'user', 'content': f'{prompt}'}])
